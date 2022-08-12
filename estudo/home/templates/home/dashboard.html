@@ -1,0 +1,8 @@
+{% extends 'yeld.html' %}
+
+{% block 'titulo' %} Área do aluno {% endblock %}
+
+{% block 'conteudo' %}
+    <h2>DASHBOARD</h2>
+    <h3>Bem vindo, {{request.user.username}}</h3>
+{% endblock %}

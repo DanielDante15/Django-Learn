@@ -3,4 +3,7 @@ from . import models
 
 admin.site.register(models.Produto)
 admin.site.register(models.Categoria)
+admin.site.register(models.Cliente)
+admin.site.register(models.Pedido)
+admin.site.register(models.PedidoItem)
 

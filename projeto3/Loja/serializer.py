@@ -2,7 +2,7 @@ from dataclasses import fields
 from pyexpat import model
 from rest_framework import serializers
 
-from Loja.models import Produto, Cliente, Pedido, PedidoItem
+from Loja.models import Avaliacao, Produto, Cliente, Pedido, PedidoItem
 from decimal import Decimal
 
 # class ProdutoSerializer(serializers.Serializer):
@@ -44,3 +44,19 @@ class PedidoItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = PedidoItem
         fields = ['produto', 'preco_un', 'qtd']
+
+
+class AvaliacaoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Avaliacao
+
+
+        fields = ['id', 'produto','nome','descricao','dt_avaliacao','estrelas']
+
+    def create(self, validated_data):
+        if(self.validated_data['estrelas'] > 5 ):
+            validated_data['estrelas'] = 5
+            return validated_data
+        if(self.validated_data['estrelas']<0):
+            validated_data['estrelas'] = 0
+            return validated_data

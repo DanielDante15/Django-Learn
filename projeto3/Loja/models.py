@@ -61,8 +61,13 @@ class Pedido(models.Model):
         return str("Pedido "+str(self.id))
 
 
-
-
+class Avaliacao(models.Model):
+    produto = models.ForeignKey(Produto,on_delete=models.CASCADE)
+    nome = models.CharField(max_length=255)
+    descricao = models.TextField()
+    dt_avaliacao = models.DateField(auto_now_add=True)
+    estrelas = models.PositiveSmallIntegerField()
+    
 
 
 

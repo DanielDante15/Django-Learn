@@ -6,4 +6,5 @@ admin.site.register(models.Categoria)
 admin.site.register(models.Cliente)
 admin.site.register(models.Pedido)
 admin.site.register(models.PedidoItem)
+admin.site.register(models.Avaliacao)
 

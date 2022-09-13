@@ -21,6 +21,16 @@ class ProdutoSerializer(serializers.ModelSerializer):
         model = Produto
         fields = ['id', 'nome', 'preco', 'preco_tax',
                   'qtd_estoque', 'categoria', 'descritivo']
+        
+    def create(self, validated_data):
+        if(self.validated_data['qtd_estoque'] < 0 ):
+
+            return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if(self.validated_data['qtd_estoque'] < 0 ):
+            validated_data['qtd_estoque'] = 0
+        return super().update(instance, validated_data)
 
     preco_tax = serializers.SerializerMethodField(method_name='calcular_taxa')
 

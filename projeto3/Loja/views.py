@@ -1,46 +1,91 @@
 import re
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework import viewsets
 from rest_framework.response import Response
 from .models import Avaliacao, Cliente, Pedido, PedidoItem, Produto
 from .serializer import AvaliacaoSerializer, ClienteSerializer, PedidoItemSerializer, PedidoSerializer, ProdutoSerializer
 from rest_framework import status
 
+from Loja import serializer
 
-@api_view(['GET', 'POST'])
-def produto_listar(request):
-    if request.method == 'GET':
-        queryset = Produto.objects.all()
-        serializer = ProdutoSerializer(queryset, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = ProdutoSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#==========================================================================================
+# @api_view(['GET', 'POST'])
+# def produto_listar(request):
+#     if request.method == 'GET':
+#         queryset = Produto.objects.all()
+#         serializer = ProdutoSerializer(queryset, many=True)
+#         return Response(serializer.data)
+#     elif request.method == 'POST':
+#         serializer = ProdutoSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#============================================================================================
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def produto_detalhes(request, id):
-    produto = get_object_or_404(Produto, pk=id)
 
-    if request.method == 'GET':
+class ProdutoListar(ListCreateAPIView):
+    queryset = Produto.objects.all()
+    serializer_class = ProdutoSerializer
 
-        serializer = ProdutoSerializer(produto)
-        return Response(serializer.data)
+    def create(self, request, *args, **kwargs):
+        dados = float(request.data['preco'])
 
-    elif request.method == 'PUT':
-        serializer = ProdutoSerializer(produto, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        if ( dados< 0) or (dados > 100):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
+        return super().create(request, *args, **kwargs)
+
+
+class ProdutoDetalhe(RetrieveUpdateDestroyAPIView):
+    queryset = Produto.objects.all()
+    serializer_class = ProdutoSerializer
+
+    def delete(self, request, pk):
+        produto = get_object_or_404(Produto, id=pk)
+
+        if produto.qtd_estoque >0:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         produto.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, *args, **kwargs):
+        
+        dados = float(request.data['preco'])
+
+        if ( dados< 0) or (dados > 100):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return super().update(request, *args, **kwargs)
+
+
+    
+    
+        
+
+
+
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def produto_detalhes(request, id):
+#     produto = get_object_or_404(Produto, pk=id)
+
+#     if request.method == 'GET':
+
+#         serializer = ProdutoSerializer(produto)
+#         return Response(serializer.data)
+
+#     elif request.method == 'PUT':
+#         serializer = ProdutoSerializer(produto, data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
+
+#     elif request.method == 'DELETE':
+#         produto.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'POST'])
